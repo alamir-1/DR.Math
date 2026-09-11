@@ -1,0 +1,24 @@
+name: drmath_webview
+description: تطبيق Dr. Math Blajat يعرض الموقع داخل WebView.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  webview_flutter: ^4.7.0
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  # عند إرسال أيقونة التطبيق، ضعها هنا واستخدم حزمة flutter_launcher_icons لتوليد كل المقاسات:
+  # assets:
+  #   - assets/icon/icon.png
