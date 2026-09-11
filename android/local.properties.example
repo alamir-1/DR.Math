@@ -1,0 +1,7 @@
+# انسخ هذا الملف باسم local.properties وحدد فيه مسار تثبيت Flutter SDK على جهازك
+# مثال (ويندوز): flutter.sdk=C:\\src\\flutter
+# مثال (ماك/لينكس): flutter.sdk=/Users/YOUR_NAME/flutter
+
+flutter.sdk=REPLACE_WITH_YOUR_FLUTTER_SDK_PATH
+flutter.versionCode=1
+flutter.versionName=1.0.0
