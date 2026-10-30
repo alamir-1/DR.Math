@@ -1,0 +1,35 @@
+workflows:
+  android-apk:
+    name: Educational Center - Android APK
+    max_build_duration: 45
+    environment:
+      flutter: stable
+      java: 17
+    scripts:
+      - name: Generate Android project
+        script: |
+          flutter create --platforms=android --org com.mohamed --project-name educenter /tmp/tpl
+          rm -rf android
+          cp -r /tmp/tpl/android ./android
+      - name: Patch AndroidManifest
+        script: python3 tool/patch_manifest.py
+      - name: Get packages
+        script: flutter pub get
+      - name: Patch plugins for new Gradle
+        script: |
+          # new Android Gradle Plugin rejects proguard-android.txt used by older plugins
+          for f in $(grep -rl "proguard-android.txt" "$HOME/.pub-cache/hosted/pub.dev" --include=build.gradle --include=build.gradle.kts 2>/dev/null); do
+            echo "patching $f"
+            sed -i.bak "s/proguard-android\.txt/proguard-android-optimize.txt/g" "$f"
+          done
+          # old plugins are compiled against android-33, but new androidx libs need 34+
+          for f in $(grep -rlE "compileSdk(Version)?" "$HOME/.pub-cache/hosted/pub.dev" --include=build.gradle --include=build.gradle.kts 2>/dev/null); do
+            if grep -qE "compileSdk(Version)?[ =(]+[0-9]+" "$f"; then
+              echo "raising compileSdk in $f"
+              sed -i -E "s/(compileSdk(Version)?[ =(]+)[0-9]+/\\136/g" "$f"
+            fi
+          done
+      - name: Build release APK
+        script: flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
