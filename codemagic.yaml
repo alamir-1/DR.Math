@@ -1,0 +1,48 @@
+workflows:
+  android-apk:
+    name: Educational Center - Android APK
+    max_build_duration: 45
+    instance_type: linux_x2
+    environment:
+      flutter: stable
+      java: 17
+    scripts:
+      - name: Generate Android project
+        script: |
+          flutter create --platforms=android --org com.mohamed --project-name educenter /tmp/tpl
+          rm -rf android
+          cp -r /tmp/tpl/android ./android
+      - name: Patch AndroidManifest
+        script: python3 tool/patch_manifest.py
+      - name: Get packages
+        script: flutter pub get
+      - name: Patch plugins for new Gradle
+        script: |
+          # new Android Gradle Plugin rejects proguard-android.txt used by older plugins
+          for f in $(grep -rl "proguard-android.txt" "$HOME/.pub-cache/hosted/pub.dev" --include=build.gradle --include=build.gradle.kts 2>/dev/null); do
+            echo "patching $f"
+            sed -i.bak "s/proguard-android\.txt/proguard-android-optimize.txt/g" "$f"
+          done
+          # old plugins are compiled against android-33, but new androidx libs need 34+
+          python3 - <<'PY'
+          import os, re
+          root = os.path.expanduser("~/.pub-cache/hosted/pub.dev")
+          pat = re.compile(r"(compileSdk(?:Version)?\s*[=(]?\s*)(\d+)")
+          def bump(m):
+              return m.group(1) + "36" if int(m.group(2)) < 36 else m.group(0)
+          for d, _, files in os.walk(root):
+              if "/example" in d:
+                  continue
+              for n in files:
+                  if n in ("build.gradle", "build.gradle.kts"):
+                      p = os.path.join(d, n)
+                      t = open(p, encoding="utf-8").read()
+                      new = pat.sub(bump, t)
+                      if new != t:
+                          open(p, "w", encoding="utf-8").write(new)
+                          print("raised compileSdk in", p)
+          PY
+      - name: Build release APK
+        script: flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
