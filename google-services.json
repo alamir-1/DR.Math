@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "979908178692",
+    "firebase_url": "https://soon-8c1e6-default-rtdb.firebaseio.com",
+    "project_id": "soon-8c1e6",
+    "storage_bucket": "soon-8c1e6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:979908178692:android:91887474c4ec909b7c5651",
+        "android_client_info": {
+          "package_name": "com.mohamed.educenter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3yUqzudliK5nEpfeAzQrpePFP5mi7rfo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
